@@ -11,15 +11,16 @@ bcrypt = Bcrypt(app)
 def signup():
     try:
         data = request.json
+        app.logger.info(data)
         email = data.get('email')
         password = data.get('password')
-        firstName = data.get('firstname')
-        lastName = data.get('lastname')
+        firstName = data.get('firstName')
+        lastName = data.get('lastName')
         user = User.query.filter_by(email=email).first()
         if user:
             return jsonify(
                 Error="This email already exists in the database please login"
-            ), 401
+            ), 409
         hashedPassword = bcrypt.generate_password_hash(password)
         newUser = User(
             email=email,
