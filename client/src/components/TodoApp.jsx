@@ -27,7 +27,6 @@ const TodoApp = () => {
 
   return (
     <div>
-      <TodoFormComponent setTodos={setTodos} todos={todos} />
       <TodoList todos={todos} setTodos={setTodos} />
     </div>
   );

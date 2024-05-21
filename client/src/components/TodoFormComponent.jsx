@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../API";
 import toast, { Toaster } from "react-hot-toast";
 
-const TodoFormComponent = ({ setTodos, todos }) => {
+const TodoFormComponent = ({ onTodoCreated }) => {
   const [todo, setTodo] = useState({ title: "", description: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -11,14 +11,10 @@ const TodoFormComponent = ({ setTodos, todos }) => {
     setLoading(true);
     e.preventDefault();
     try {
-      const response = await api.post("/todo", todo);
+      await api.post("/todo", todo);
       toast.success("Todo created successfully!");
-      
-      // Ensure the new todo has the same structure as the existing todos
-      const newTodo = response.data;
-      setTodos([...todos, newTodo]);
-
-      setTodo({ title: "", description: "" }); // Clear the form
+      setTodo({ title: "", description: "" });
+      onTodoCreated();  // Notify the parent component to refresh the todos
     } catch (error) {
       setError("Something went wrong!");
       setTimeout(() => {
@@ -32,12 +28,12 @@ const TodoFormComponent = ({ setTodos, todos }) => {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <div className="flex justify-center items-center bg-white">
+      <div className="relative overflow-x-auto sm:rounded-lg w-full mx-auto max-w-5xl mt-4">
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded px-8 pt-16 pb-8 mb-4 w-full max-w-md"
+          className="bg-white rounded px-8 pt-6 pb-8 mb-4 mx-auto max-w-7xl"
         >
-          <div className="mb-4">
+          <div className="mb-4 mx-auto max-w-7xl">
             <h2 className="mb-3 text-3xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create your todos
             </h2>
@@ -54,6 +50,7 @@ const TodoFormComponent = ({ setTodos, todos }) => {
               placeholder="Enter your TODO"
               value={todo.title}
               onChange={(e) => setTodo({ ...todo, title: e.target.value })}
+              autoComplete="off"
             />
             <label
               className="block mb-2 mt-3 text-sm font-medium text-gray-900 dark:text-white"
@@ -67,6 +64,7 @@ const TodoFormComponent = ({ setTodos, todos }) => {
               type="text"
               placeholder="Enter description"
               value={todo.description}
+              autoComplete="off"
               onChange={(e) =>
                 setTodo({ ...todo, description: e.target.value })
               }

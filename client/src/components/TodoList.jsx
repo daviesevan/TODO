@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../API";
+import TodoFormComponent from "./TodoFormComponent";
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
@@ -29,8 +30,9 @@ const TodoList = () => {
         return todo;
       });
       setTodos(updatedTodos);
-      // If you want to update the TODO status on the server, you can make a PUT request here
-      // await api.put(`/todos/${id}`, { completed: !todo.completed });
+
+      // Update the TODO status on the server
+      await api.put(`/todo/${id}`, { completed: updatedTodos.find(todo => todo.id === id).completed });
     } catch (error) {
       console.error("Error updating TODO:", error);
     }
@@ -41,47 +43,60 @@ const TodoList = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-8">
+    <div className="flex flex-col items-center mt-5 mb-5">
       <h2 className="text-2xl font-bold mb-4">TODO List</h2>
-      <ul className="w-full max-w-md">
-        {todos.map((todo) => (
-          <li
-            key={todo.id}
-            className="flex items-center justify-between bg-white rounded px-4 py-2 mb-2"
-          >
-            <div className="flex">
-              <div className="flex items-center h-5">
-                <input
-                  id="helper-checkbox"
-                  aria-describedby="helper-checkbox-text"
-                  type="checkbox"
-                  checked={todo.completed || false} // Ensure a default value
-                  onChange={() => handleCheckboxChange(todo.id)}
-                  className="mr-2"
-                />
-                <div className="ms-2 text-sm">
-                  <span
-                    className={`${
-                      todo.completed
-                        ? "line-through text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        : ""
-                    }`}
-                  >
-                    {todo.title}
-                  </span>
-                </div>
-                <br />
-                <p
-                  id="helper-checkbox-text"
-                  className="text-xs font-normal text-gray-500 dark:text-gray-300"
+      <TodoFormComponent onTodoCreated={fetchTodos} /> 
+      <div className="relative overflow-x-auto sm:rounded-lg w-full mx-auto max-w-5xl mt-4">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <caption className="p-5 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">
+            TODOs
+            <p className="mt-1 text-sm font-normal text-gray-500 dark:text-gray-400">
+              Browse your list of TODOs.
+            </p>
+          </caption>
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Todo Title
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Todo Description
+              </th>
+              <th scope="col" className="px-6 py-3 text-center">
+                Completed
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {todos.map((todo) => (
+              <tr key={todo.id} className="bg-white dark:bg-gray-800">
+                <td
+                  className={`px-6 py-4 font-medium text-gray-900 dark:text-white ${
+                    todo.completed ? "line-through" : ""
+                  }`}
+                >
+                  {todo.title}
+                </td>
+                <td
+                  className={`px-6 py-4 ${
+                    todo.completed ? "line-through" : ""
+                  }`}
                 >
                   {todo.description}
-                </p>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <input
+                    type="checkbox"
+                    checked={todo.completed}
+                    onChange={() => handleCheckboxChange(todo.id)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="flex justify-center mt-4">
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <button

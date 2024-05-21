@@ -48,7 +48,8 @@ def get_todos():
             'title': todo.title,
             'description': todo.description,
             'created_at': todo.created_at,
-            'updated_at': todo.updated_at
+            'updated_at': todo.updated_at,
+            'completed': todo.completed 
         }
         output.append(todo_data)
     
@@ -58,7 +59,6 @@ def get_todos():
         'current_page': todos.page,
         'total_items': todos.total
     })
-
 
 @app.route('/todo/<todo_id>', methods=['GET'])
 @jwt_required()
@@ -77,20 +77,21 @@ def get_todo(todo_id):
     }
     return jsonify({'todo': todo_data})
 
-@app.route('/todo/<todo_id>', methods=['PUT'])
+@app.route('/todo/<id>', methods=['PUT'])
 @jwt_required()
-def update_todo(todo_id):
+def update_todo(id):
+    data = request.json
     current_user_email = get_jwt_identity()
     user = User.query.filter_by(email=current_user_email).first()
-    data = request.get_json()
-    todo = Todo.query.filter_by(id=todo_id, user_id=user.id).first()
-    if not todo:
-        return jsonify({'message': 'Todo not found!'}), 404
 
-    todo.title = data['title']
-    todo.description = data.get('description', todo.description)
+    todo = Todo.query.filter_by(id=id, user_id=user.id).first()
+    if not todo:
+        return jsonify({"error": "Todo not found"}), 404
+
+    todo.completed = data.get('completed', todo.completed)
     db.session.commit()
-    return jsonify({'message': 'Todo updated!'})
+
+    return jsonify({"message": "Todo updated successfully"})
 
 @app.route('/todo/<todo_id>', methods=['DELETE'])
 @jwt_required()
