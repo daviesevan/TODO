@@ -1,4 +1,5 @@
 venv/
 .env
 app/auth/__pycache__/
+app/Todos/__pycache__/
 __pycache__/

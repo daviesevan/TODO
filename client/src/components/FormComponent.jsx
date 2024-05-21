@@ -35,7 +35,10 @@ const FormComponent = ({ route, method }) => {
         }
       }
     } catch (error) {
-      setError('Incorrect email or password!')
+      setError("Something went wrong!");
+      setTimeout(() => {
+        setError("");
+      }, 3000);
     } finally {
       setLoading(false);
     }

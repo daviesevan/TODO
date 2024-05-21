@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import TodoApp from "../components/TodoApp";
 
 const DashboardPage = () => {
   return (
-    <div>DashboardPage</div>
-  )
-}
+    <>
+      <TodoApp />
+    </>
+  );
+};
 
-export default DashboardPage
+export default DashboardPage;

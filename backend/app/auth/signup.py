@@ -14,8 +14,6 @@ def signup():
         app.logger.info(data)
         email = data.get('email')
         password = data.get('password')
-        firstName = data.get('firstName')
-        lastName = data.get('lastName')
         user = User.query.filter_by(email=email).first()
         if user:
             return jsonify(
@@ -25,8 +23,6 @@ def signup():
         newUser = User(
             email=email,
             password = hashedPassword,
-            firstName = firstName,
-            lastName = lastName
         )
         db.session.add(newUser)
         db.session.commit()
